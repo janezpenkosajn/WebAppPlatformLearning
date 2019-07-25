@@ -1,0 +1,9 @@
+# install mysql and everything necesary for dbnode
+---
+- name: configure and deploy mysql nodes
+  hosts: mysql, mysqlmon
+  become: yes
+  become_method: sudo
+
+  roles:
+    - mysql-base

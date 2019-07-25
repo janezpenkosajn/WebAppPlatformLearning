@@ -1,0 +1,4 @@
+---
+# enable WEBTATIC PHP repository
+- include: web-base.yml
+- include: web-users-folders.yml

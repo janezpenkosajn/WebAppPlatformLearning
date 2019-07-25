@@ -1,0 +1,36 @@
+---
+# install nginx and keepalived
+- name: install nginx and keepalived
+  yum:
+    name:
+      - nginx
+      - keepalived
+    state: present
+
+# start and enable nginx
+- name: nginx service start
+  service:
+    name: nginx
+    state: started
+    enabled: yes
+
+# create config file for keepalived
+- name: create config file for keepalived
+  template: 
+    src: keepalived.conf.j2
+    dest: /etc/keepalived/keepalived.conf
+  notify: h_keepalived_restart
+
+# create config file for nginx (nginx.conf)
+- name: create config file for nginx (nginx.conf)
+  template: 
+    src: nginx.conf.j2
+    dest: /etc/nginx/nginx.conf
+  notify: h_nginx_restart
+
+# create config file for loadbalancer cluster
+- name: create config file for loadbalancer cluster (cluster01.conf)
+  template: 
+    src: cluster01.conf.j2
+    dest: /etc/nginx/conf.d/cluster01.conf
+  notify: h_nginx_restart

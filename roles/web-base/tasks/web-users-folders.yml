@@ -1,0 +1,54 @@
+---
+# create directory structure for git
+- name: create directory for git
+  file:
+    path: /git
+    state: directory
+# initialize git repos
+- name: init git repos
+  command: git init --bare "{{ item.name }}"
+  args:
+    chdir: /git
+  loop:
+    - "{{ user_livepantaloo }}"
+    - "{{ user_apipantaloo }}"
+    - "{{ user_prelivepantaloo }}"
+    - "{{ user_stablepantaloo }}"
+    - "{{ user_media }}"
+# create users 
+- name: create users
+  user:
+    name: "{{ item.name }}"
+    home: "{{ item.home }}"
+    state: present
+  loop:
+    - "{{ user_livepantaloo }}"
+    - "{{ user_apipantaloo }}"
+    - "{{ user_prelivepantaloo }}"
+    - "{{ user_stablepantaloo }}"
+    - "{{ user_media }}"
+# change ownership of git directories
+- name: change ownership of git directories
+  file:
+    path: "{{ item.home }}"
+    owner: "{{ item.name }}"
+    group: "{{ item.name }}"
+    mode: 0755
+  loop:
+    - "{{ user_livepantaloo }}"
+    - "{{ user_apipantaloo }}"
+    - "{{ user_prelivepantaloo }}"
+    - "{{ user_stablepantaloo }}"
+    - "{{ user_media }}"
+#create post-receive hook for git
+- name: create post-receive hook for git
+  template: 
+    src: post-receive.j2
+    dest: /git/{{ item.name }}/hooks/post-receive
+    mode: 0755
+  loop:
+    - "{{ user_livepantaloo }}"
+    - "{{ user_apipantaloo }}"
+    - "{{ user_prelivepantaloo }}"
+    - "{{ user_stablepantaloo }}"
+    - "{{ user_media }}"

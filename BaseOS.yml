@@ -1,0 +1,9 @@
+# prepare base OS, configure, install and stuff
+- name: apply common config and apps to all nodes
+  hosts: all
+#  remote_user: janez
+  become: yes
+  become_method: sudo
+
+  roles:
+    - base-os

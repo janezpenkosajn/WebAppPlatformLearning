@@ -1,0 +1,104 @@
+user  nginx;
+worker_processes  4;
+
+error_log  /var/log/nginx/error.log warn;
+pid        /var/run/nginx.pid;
+
+worker_rlimit_nofile 40960;
+
+events {
+        use epoll;
+        # accept X connections per worker process
+        worker_connections  10240;
+        # accept more than 1 connection at a time
+        multi_accept on;
+}
+timer_resolution  500ms;
+
+
+http {
+    include       /etc/nginx/mime.types;
+   default_type  application/octet-stream;
+   log_format  main  '$remote_addr\t$remote_user\t[$time_local]\t$request\t'
+                      '$status\t$body_bytes_sent\t$http_referer\t'
+                      '$http_user_agent\t$http_x_forwarded_for\t'
+                      'Req_Time\t$request_time\tWeb_srv_rsp_time\t$upstream_response_time\tWeb_srv_IP:\t$upstream_addr\tReq_size:\t$request_length\tHTTP_content_size:\t$http_content_length\tSSL_cipher:\t$ssl_cipher\tSSL_protocol:\t$ssl_protocol';
+
+fastcgi_send_timeout 300;
+fastcgi_read_timeout 300;
+
+        access_log  /var/log/nginx/access.log  main;
+
+        sendfile        on;
+        tcp_nopush     on;
+        # timeout during which a keep-alive client connection will stay open on the server side
+        keepalive_timeout  30;
+        #Sets the maximum number of requests that can be served through one keep-alive
+        #connection. After the maximum number of requests are made, the connection is closed.
+        keepalive_requests 100000;
+        tcp_nodelay on;
+
+
+        # Caches information about open FDs, freqently accessed files.
+        open_file_cache max=10000 inactive=20s;
+        open_file_cache_valid 30s;
+        open_file_cache_min_uses 2;
+        open_file_cache_errors on;
+
+
+# trusted addresses that are known to send correct replacement addresses
+# local network segment and Cloudflare IPs
+set_real_ip_from 192.168.197.0/24;
+set_real_ip_from 10.131.0.0/16;
+set_real_ip_from 103.21.244.0/22;
+set_real_ip_from 103.22.200.0/22;
+set_real_ip_from 103.31.4.0/22;
+set_real_ip_from 104.16.0.0/12;
+set_real_ip_from 108.162.192.0/18;
+set_real_ip_from 131.0.72.0/22;
+set_real_ip_from 141.101.64.0/18;
+set_real_ip_from 162.158.0.0/15;
+set_real_ip_from 172.64.0.0/13;
+set_real_ip_from 173.245.48.0/20;
+set_real_ip_from 188.114.96.0/20;
+set_real_ip_from 190.93.240.0/20;
+set_real_ip_from 197.234.240.0/22;
+set_real_ip_from 198.41.128.0/17;
+set_real_ip_from 2400:cb00::/32;
+set_real_ip_from 2606:4700::/32;
+set_real_ip_from 2803:f800::/32;
+set_real_ip_from 2405:b500::/32;
+set_real_ip_from 2405:8100::/32;
+set_real_ip_from 2c0f:f248::/32;
+set_real_ip_from 2a06:98c0::/29;
+
+# use any of the following two
+real_ip_header X-FORWARDED-FOR;
+#real_ip_header CF-CONNECTING-IP;
+real_ip_recursive on;
+
+
+
+
+        #gzip  on;
+        ##
+        # Gzip Settings
+        ##
+
+        gzip on;
+        gzip_disable "msie6";
+
+        gzip_vary on;
+        gzip_proxied any;
+        gzip_types text/plain text/css application/json application/xml application/xml+rss text/javascript image/png application/javascript application/octet-stream audio/ogg text/xml image/jpeg;
+        gzip_min_length 1100;
+        gzip_static on;
+
+
+       gzip_comp_level 6;
+        gzip_buffers 16 8k;
+        gzip_http_version 1.1;
+#         gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
+
+        include /etc/nginx/conf.d/*.conf;
+}

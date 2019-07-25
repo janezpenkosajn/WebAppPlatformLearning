@@ -1,0 +1,3 @@
+
+- name: h_zabbix-agent_restart
+  service: name=zabbix-agent state=restarted

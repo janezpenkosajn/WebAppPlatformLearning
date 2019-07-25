@@ -1,0 +1,23 @@
+---
+# enable zabbix repo
+- name: enable zabbix repository
+  yum:
+    name: https://repo.zabbix.com/zabbix/4.2/rhel/7/x86_64/zabbix-release-4.2-1.el7.noarch.rpm
+    state: present
+ # enable mysql repo   
+- name: enable MySQL repository
+  yum:
+    name: https://dev.mysql.com/get/mysql80-community-release-el7-2.noarch.rpm
+    state: present
+#  install packages
+- name: Install zabbix packages and helper mysql packkages
+  yum:
+    name:
+      - zabbix-server-mysql
+      - zabbix-web-mysql
+      - zabbix-agent
+      - python-PyMySQL
+      - MySQL-python
+      - mysql
+
+# finish installing zabbix manualy https://www.zabbix.com/download?zabbix=4.2&os_distribution=centos&os_version=7&db=mysql

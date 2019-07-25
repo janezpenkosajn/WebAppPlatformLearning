@@ -1,0 +1,34 @@
+---
+# This playbook contains common plays that will install mongo
+
+# add mongo repository for version 3.4
+- name: Add MongoDB Repository
+  yum_repository:
+    name: MongoDB-3.4
+    description: MongoDB-3.4
+    gpgcheck: 1
+    enabled: 1
+    baseurl: https://repo.mongodb.org/yum/redhat/$releasever/mongodb-org/3.4/x86_64/
+    gpgkey: https://www.mongodb.org/static/pgp/server-3.4.asc
+
+# install mongo
+- name: Install mongo
+  yum:
+    name: mongodb-org
+    state: present
+
+# edit mongo config file
+- name: Mongo config file
+  template: 
+    src: mongod.conf.j2 
+    dest: /etc/mongod.conf
+  tags: mongo
+  notify: h_mongo_restart
+
+# start mongod service
+- name: Start the mongod service
+  service: 
+    name: mongod 
+    state: started 
+    enabled: yes
+  tags: mongo

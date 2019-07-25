@@ -1,0 +1,44 @@
+[mysqld]
+datadir=/var/lib/mysql
+socket=/var/lib/mysql/mysql.sock
+user=mysql
+
+symbolic-links=0
+
+max_connections = {{ mysql_max_connections }}
+max_user_connections = {{ mysql_max_user_connections }}
+wait_timeout = {{ mysql_wait_timeout }}
+interactive_timeout = {{ mysql_interactive_timeout }}
+
+default-storage-engine=innodb
+
+innodb_data_home_dir = /var/lib/mysql-data/
+innodb_data_file_path=ibdata1:32M;ibdata2:32M:autoextend:max:1024M
+innodb_file_per_table=1
+innodb_status_file=1
+innodb_buffer_pool_size = {{ mysql_innodb_buffer_pool_size }}
+innodb_flush_method=O_DIRECT
+innodb_flush_log_at_trx_commit=2
+innodb_log_file_size=64M
+innodb_log_buffer_size=4M
+
+# thread_cache_size=64M
+# query_cache_size=268435456
+ 
+read-only
+log-bin = {{ inventory_hostname }}-binarylog
+relay-log = {{ inventory_hostname }}-relaylog
+server-id = {{ mysqlServerId }}
+auto_increment_increment = 2
+auto_increment_offset = 1
+expire_logs_days = {{ mysql_expire_logs_days }}
+log_slave_updates
+
+slow_query_log_file=/var/log/mysql-slow-query.log
+slow_query_log = 1
+
+skip-name-resolve
+ 
+[mysqld_safe]
+log-error=/var/log/mysqld.log
+pid-file=/var/run/mysqld/mysqld.pid

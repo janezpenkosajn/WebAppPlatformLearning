@@ -1,0 +1,64 @@
+---
+# This playbook contains common plays that will be run on all nodes.
+
+# set timezone
+- name: set timezone to Europe/Ljubljana
+  timezone:
+    name: Europe/Ljubljana
+
+# enable EPEL repository
+- name: enable EPEL repository
+  yum:
+    name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-{{ ansible_distribution_major_version }}.noarch.rpm
+    state: present
+# install apps
+- name: Install apps
+  yum:
+    name:
+      - wget
+      - nano
+      - htop
+      - libselinux-python
+      - libsemanage-python
+      - yum-utils
+    state: present
+# configure NTP
+- name: Install ntp
+  yum: 
+    name: ntp 
+    state: present
+  tags: ntp
+
+- name: Configure ntp file
+  template: 
+    src: ntp.conf.j2 
+    dest: /etc/ntp.conf
+  tags: ntp
+  notify: h_ntp_restart
+
+- name: Start the ntp service
+  service: 
+    name: ntpd 
+    state: started 
+    enabled: yes
+  tags: ntp
+
+# disable firewall
+- name: Stop firewall service
+  service: 
+    name: firewalld 
+    state: stopped 
+    enabled: no
+  tags: ntp
+
+# Put SELinux in permissive mode, logging actions that would be blocked.
+- name: change SELinux
+  selinux:
+    policy: targeted
+    state: permissive
+
+#update all packages
+# - name: update all packages
+#   yum:
+#     name: '*'
+#     state: latest      

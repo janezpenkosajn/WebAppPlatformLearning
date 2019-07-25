@@ -1,0 +1,37 @@
+active_master_role      writer
+
+<host default>
+    cluster_interface       eth0
+    pid_path                /run/mysql-mmm-agent.pid
+    bin_path                /usr/libexec/mysql-mmm/
+    replication_user        {{ mysql_user_mmm_replication }}
+    replication_password    {{ mysql_user_mmm_replication_pass }}
+    agent_user              {{ mysql_user_mmm_agent }}
+    agent_password          {{ mysql_user_mmm_agent_pass }}
+</host>
+
+<host em-dbnode01>
+    ip      192.168.197.126
+    mode    master
+    peer    em-dbnode02
+</host>
+
+<host em-dbnode02>
+    ip      192.168.197.127
+    mode    master
+    peer    em-dbnode01
+</host>
+
+<role writer>
+    hosts   em-dbnode01, em-dbnode02
+    ips     {{ mysql_vip_writer }}
+    mode    exclusive
+    prefer  em-dbnode01
+</role>
+
+<role reader>
+    hosts   em-dbnode01, em-dbnode02
+    ips     {{ mysql_vip_reader }}
+    mode    balanced
+    prefer  em-dbnode02
+</role>

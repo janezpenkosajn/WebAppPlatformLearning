@@ -1,0 +1,85 @@
+---
+- name: enable MySQL repository
+  yum:
+    name: https://dev.mysql.com/get/mysql80-community-release-el7-2.noarch.rpm
+    state: present
+
+- name: select 5.6 version of mysql
+  command: "{{ item }}"
+  with_items:
+      - yum-config-manager --disable mysql80-community
+      - yum-config-manager --enable mysql56-community
+
+- name: install mysql server and other packages
+  yum:
+    name:
+        - mysql-community-server
+        - python-PyMySQL
+        - MySQL-python
+        - mysql-mmm-agent
+    state: present
+
+- name: create data directory for mysql
+  file:
+    path: /var/lib/mysql-data
+    state: directory
+    owner: mysql
+    group: mysql
+    mode: 0755
+- name: create log file for mysql-slow-query
+  file:
+    path: /var/log/mysql-slow-query.log
+    state: touch
+    owner: mysql
+    group: mysql
+    mode: 0755
+
+- name: Create config file for mysqld
+  template: 
+    src: my.cnf.j2
+    dest: /etc/my.cnf
+  notify: h_mysqld_restart
+
+- name: enable mysqld service at boot
+  service:
+    name: mysqld
+    enabled: yes
+    state: started
+
+- name: Create common config file for mysql-mmm-agent
+  template: 
+    src: mmm_common.conf.j2
+    dest: /etc/mysql-mmm/mmm_common.conf
+- name: Create agent config file for mysql-mmm-agent
+  template: 
+    src: mmm_agent.conf.j2
+    dest: /etc/mysql-mmm/mmm_agent.conf
+- name: enable mysql-mmm-agent service at boot
+  service:
+    name: mysql-mmm-agent
+    enabled: yes
+    state: started
+
+- name: create mysql users for replication (mmm_agent)
+  mysql_user:
+    name: "{{ mysql_user_mmm_agent }}"
+    password: "{{ mysql_user_mmm_agent_pass }}"
+    priv: "{{ mysql_user_mmm_agent_priv }}"
+    host: "{{ mysql_user_host }}"
+    state: present
+
+- name: create mysql users for replication (mmm_monitor)
+  mysql_user:
+    name: "{{ mysql_user_mmm_monitor }}"
+    password: "{{ mysql_user_mmm_monitor_pass }}"
+    priv: "{{ mysql_user_mmm_monitor_priv }}"
+    host: "{{ mysql_user_host }}"
+    state: present
+
+- name: create mysql users for replication (mmm_replication)
+  mysql_user:
+    name: "{{ mysql_user_mmm_replication }}"
+    password: "{{ mysql_user_mmm_replication_pass }}"
+    priv: "{{ mysql_user_mmm_replication_priv }}"
+    host: "{{ mysql_user_host }}"
+    state: present

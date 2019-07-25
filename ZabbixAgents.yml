@@ -1,0 +1,9 @@
+# install zabbix
+
+- name: configure and deploy zabbix agents
+  hosts: mongo:web:lb:mysql:mysqlmon
+  become: yes
+  become_method: sudo
+
+  roles:
+    - zabbix-agents

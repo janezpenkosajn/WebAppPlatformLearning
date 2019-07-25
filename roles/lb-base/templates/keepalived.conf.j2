@@ -1,0 +1,32 @@
+! Configuration File for keepalived
+
+global_defs {
+
+}
+
+vrrp_script chk_curl {
+    script "/usr/bin/curl http://{{ ansible_host }}"
+    interval 2
+    weight -4
+    timeout 5
+    fall 2
+    rise 2
+}
+
+vrrp_instance VI_1 {
+    state MASTER
+    interface eth0
+    virtual_router_id 197
+    priority {{ keepalived_priority }}
+    advert_int 1
+    authentication {
+        auth_type PASS
+        auth_pass 1111
+    }
+    virtual_ipaddress {
+        192.168.197.16/32 dev eth0
+    }
+    track_script {
+        chk_curl
+    }
+}

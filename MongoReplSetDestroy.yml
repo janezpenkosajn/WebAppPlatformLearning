@@ -1,0 +1,33 @@
+# playbook to destroy replication set
+
+- hosts: mongo[0]
+  become: yes
+  become_method: sudo
+  tasks:
+    - name: remove slaves
+      command: "{{ item }}"
+      with_items: 
+      - mongo --eval 'rs.remove("192.168.197.205:27017")'
+      - mongo --eval 'rs.remove("192.168.197.206:27017")'
+
+- hosts: mongo
+  become: yes
+  become_method: sudo
+  tasks:
+    - name: Mongo config file without replication
+      template: 
+        src: mongod_norep.conf.j2 
+        dest: /etc/mongod.conf
+    
+    - name: restart mongod on all nodes
+      service: 
+        name: mongod 
+        state: restarted
+
+    - name: remove local db
+      command: mongo --eval '"use local";db.dropDatabase()'
+
+    - name: restart mongod on primary node
+      service: 
+        name: mongod 
+        state: restarted

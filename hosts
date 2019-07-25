@@ -1,0 +1,22 @@
+[mongo]
+em-dbmongo01 ansible_host=192.168.197.204
+em-dbmongo02 ansible_host=192.168.197.205
+em-dbmongo03 ansible_host=192.168.197.206
+
+[web]
+em-web01 ansible_host=192.168.197.111
+em-web02 ansible_host=192.168.197.112
+
+[lb]
+em-lb01 ansible_host=192.168.197.108 keepalived_priority=100
+em-lb02 ansible_host=192.168.197.109 keepalived_priority=101
+
+[mysql]
+em-dbnode01 ansible_host=192.168.197.126 mysqlServerId=1 mysqlnode=em-dbnode01
+em-dbnode02 ansible_host=192.168.197.127 mysqlServerId=2 mysqlnode=em-dbnode02
+
+[mysqlmon]
+em-dbmonitor ansible_host=192.168.197.125 mysqlServerId=99 mysqlnode=em-dbmonitor
+
+[zabbix]
+em-zabbix ansible_host=192.168.197.100

@@ -1,0 +1,53 @@
+- hosts: mysql[1]
+  become: yes
+  become_method: sudo
+  tasks:
+  - name: Get master status
+    mysql_replication:
+      mode: getmaster
+    delegate_to: "{{ groups['mysql'][0].ansible_host }}"
+    register: masterstatus
+
+  - name: Configure slave 
+    mysql_replication:
+      mode: changemaster
+      master_host: "{{ groups['mysql'][0].ansible_host }}"
+      master_user: "{{ mysql_user_mmm_replication }}"
+      master_password: "{{ mysql_user_mmm_replication_pass }}"
+      master_log_file: "{{ masterstatus.File }}"
+      master_log_pos: "{{ masterstatus.Position }}"
+
+- hosts: mysql[0]
+  become: yes
+  become_method: sudo
+  tasks:
+  - name: Get master status
+    mysql_replication:
+      mode: getmaster
+    delegate_to: "{{ groups['mysql'][1].ansible_host }}"
+    register: masterstatus
+
+  - name: Configure slave 
+    mysql_replication:
+      mode: changemaster
+      master_host: "{{ groups['mysql'][1].ansible_host }}"
+      master_user: "{{ mysql_user_mmm_replication }}"
+      master_password: "{{ mysql_user_mmm_replication_pass }}"
+      master_log_file: "{{ masterstatus.File }}"
+      master_log_pos: "{{ masterstatus.Position }}"
+
+- hosts: mysql
+  become: yes
+  become_method: sudo
+  tasks:
+  - name: Start slave on nodes
+    mysql_replication:
+        mode: startslave
+
+  - name: show slave status on nodes
+    mysql_replication:
+        mode: getslave
+    register: slavestatus
+  - debug: msg="{{slavestatus.Slave_IO_State}}"
+  - debug: msg="{{slavestatus.Slave_SQL_Running_State}}"
+  - debug: msg="{{slavestatus.Last_Error}}"

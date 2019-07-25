@@ -1,0 +1,9 @@
+# install Apache, php and everything necesary for web node
+
+- name: configure and deploy load balancers
+  hosts: lb
+  become: yes
+  become_method: sudo
+
+  roles:
+    - lb-base

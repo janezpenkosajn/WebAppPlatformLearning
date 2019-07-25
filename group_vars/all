@@ -1,0 +1,57 @@
+---
+# Variables for all hosts
+ntpserver: europe.pool.ntp.org
+
+# Variables for mongodb
+replicaSetName: rs0
+
+# Variables for mysql
+mysql_expire_logs_days: 30
+mysql_max_connections: 500
+mysql_max_user_connections: 600
+mysql_wait_timeout: 60
+mysql_interactive_timeout: 60
+mysql_innodb_buffer_pool_size: 6G
+
+mysql_user_root_pass: abc
+mysql_user_host: 192.168.%.%
+mysql_user_mmm_agent: mmm_agent
+mysql_user_mmm_agent_pass: abc
+mysql_user_mmm_agent_priv: "*.*:SUPER,REPLICATION CLIENT,CREATE TABLESPACE"
+mysql_user_mmm_monitor: mmm_monitor
+mysql_user_mmm_monitor_pass: abc
+mysql_user_mmm_monitor_priv: "*.*:REPLICATION CLIENT"
+mysql_user_mmm_replication: mmm_replication
+mysql_user_mmm_replication_pass: abc
+mysql_user_mmm_replication_priv: "*.*:REPLICATION SLAVE"
+mysql_vip_writer: 192.168.197.226
+mysql_vip_reader: 192.168.197.227
+
+mysql_user_pantaloo_pass: abc
+
+
+# variables for user accounts
+user_livepantaloo:
+    name: livepantaloo
+    home: /git/livepantaloo
+    wwwdir: live.pantaloo.com
+user_apipantaloo:
+    name: apipantaloo
+    home: /git/apipantaloo
+    wwwdir: api.pantaloo.com
+user_prelivepantaloo:
+    name: prelivepantaloo
+    home: /git/prelivepantaloo
+    wwwdir: prelive.pantaloo.com
+user_stablepantaloo:
+    name: stablepantaloo
+    home: /git/stablepantaloo
+    wwwdir: stable.pantaloo.com
+user_media:
+    name: media
+    home: /git/media
+    wwwdir: media
+
+# variables for zabbix
+zabbix_mysql_pass: abc
+zabbix_mysql_root_pass: abc

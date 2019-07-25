@@ -1,0 +1,9 @@
+# install zabbix
+
+- name: configure and deploy zabbix
+  hosts: zabbix
+  become: yes
+  become_method: sudo
+
+  roles:
+    - zabbix-base

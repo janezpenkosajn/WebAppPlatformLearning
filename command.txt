@@ -1,0 +1,4 @@
+# MongoDB:
+# to create replica set first run 'MongoBase.yml' and then 'MongoReplSetInit.yml'
+# to destroy replica set run 'MongoReplSetDestroy.yml' (destroying does not delete collections)
+# to recreate replica set run again 'MongoBase.yml' and then 'MongoReplSetInit.yml'

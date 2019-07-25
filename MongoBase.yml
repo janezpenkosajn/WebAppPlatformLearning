@@ -1,0 +1,8 @@
+# install mongo with specific version and prepare fo replica set
+- name: configure and deploy mongo server
+  hosts: mongo
+  become: yes
+  become_method: sudo
+
+  roles:
+    - mongo-base

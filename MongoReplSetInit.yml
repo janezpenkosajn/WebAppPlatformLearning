@@ -1,0 +1,9 @@
+# initialize replica set, primary member is first host on the list
+
+- name: init replica set
+  hosts: mongo[0]
+  become: yes
+  become_method: sudo
+
+  roles:
+    - mongo-replica-set
